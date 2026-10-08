@@ -125,8 +125,9 @@ fi
 
 STATE_FILE=$(jq -r '.state_file // "state.json"' "$CONFIG_FILE")
 NOW=$(date +%s)
+NOW_ISO=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-log_verbose "Execution timestamp: $NOW"
+log_verbose "Execution timestamp: $NOW_ISO ($NOW)"
 log_verbose "Force mode (ignore triggers): $FORCE"
 log_verbose "Dry-run mode: $DRY_RUN"
 log_verbose "State file: $STATE_FILE"
@@ -175,6 +176,8 @@ for (( i=0; i<TRIGGER_COUNT; i++ )); do
 
   FIRST_SEEN=$(echo "$STATE_JSON" | jq -r --arg name "$NAME" '.[$name].first_seen // empty')
 
+  DESC="Value at $JSON_PATH $OPERATOR $THRESHOLD for at least ${REQUIRED_SECS}s"
+
   if [[ "$CONDITION_MET" == "true" ]]; then
     if [[ -z "$FIRST_SEEN" || "$FIRST_SEEN" == "null" ]]; then
       FIRST_SEEN=$NOW
@@ -184,8 +187,8 @@ for (( i=0; i<TRIGGER_COUNT; i++ )); do
 
     log_verbose "Trigger [$NAME]: Condition MET ($VALUE $OPERATOR $THRESHOLD). Active for $DURATION / ${REQUIRED_SECS}s."
 
-    STATE_JSON=$(echo "$STATE_JSON" | jq --arg name "$NAME" --argjson fs "$FIRST_SEEN" --argjson val "$VALUE" \
-      '.[$name] = {"active": true, "first_seen": $fs, "last_value": $val}')
+    STATE_JSON=$(echo "$STATE_JSON" | jq --arg name "$NAME" --argjson fs "$FIRST_SEEN" --argjson val "$VALUE" --arg desc "$DESC" \
+      '.[$name] = {"active": true, "first_seen": $fs, "last_value": $val, "desc": $desc}')
 
     if (( DURATION >= REQUIRED_SECS )); then
       if [[ -z "${SEEN_PARAMS[$PARAM_NAME]:-}" ]]; then
@@ -199,8 +202,8 @@ for (( i=0; i<TRIGGER_COUNT; i++ )); do
   else
     log_verbose "Trigger [$NAME]: Condition NOT MET ($VALUE $OPERATOR $THRESHOLD). Resetting active state."
 
-    STATE_JSON=$(echo "$STATE_JSON" | jq --arg name "$NAME" --argjson val "$VALUE" \
-      '.[$name] = {"active": false, "first_seen": null, "last_value": $val}')
+    STATE_JSON=$(echo "$STATE_JSON" | jq --arg name "$NAME" --argjson val "$VALUE" --arg desc "$DESC" \
+      '.[$name] = {"active": false, "first_seen": null, "last_value": $val, "desc": $desc}')
   fi
 done
 
