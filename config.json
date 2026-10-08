@@ -7,22 +7,38 @@
       "param_name": "soc",
       "operator": "<",
       "threshold": 10.0,
-      "required_seconds": 1500
+      "required_seconds": 1800
     },
     {
       "name": "high_load",
       "json_path": ".data.pload",
       "param_name": "pload",
       "operator": ">",
-      "threshold": 500.0,
-      "required_seconds": 120
+      "threshold": 2000.0,
+      "required_seconds": 900
     },
     {
       "name": "full_soc",
       "json_path": ".data.soc",
       "param_name": "soc",
-      "operator": "==",
-      "threshold": 100.0,
+      "operator": ">=",
+      "threshold": 95.0,
+      "required_seconds": 300
+    },
+    {
+      "name": "full_pev",
+      "json_path": ".data.pev",
+      "param_name": "pev",
+      "operator": ">=",
+      "threshold": 10.0,
+      "required_seconds": 300
+    },
+    {
+      "name": "no_pev",
+      "json_path": ".data.pev",
+      "param_name": "pev",
+      "operator": "<",
+      "threshold": 2.0,
       "required_seconds": 300
     },
     {
@@ -30,8 +46,8 @@
       "json_path": ".data.ppv",
       "param_name": "ppv",
       "operator": "<",
-      "threshold": 1000,
-      "required_seconds": 300
+      "threshold": 500,
+      "required_seconds": 3600
     }
   ]
 }
