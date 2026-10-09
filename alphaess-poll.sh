@@ -8,6 +8,7 @@ SYS_SN=""
 APP_ID=""
 APP_SECRET=""
 OUTPUT_FILE=""
+API_NAME="getLastPowerData"
 
 CURL_BIN=$(which curl)
 [ -z "$CURL_BIN" ] && CURL_BIN="/bin/curl"
@@ -16,12 +17,13 @@ CURL_BIN=$(which curl)
 show_help() {
     echo "Usage: $0 [OPTIONS]"
     echo "Options:"
-    echo "  -h, --help      Show this help message"
-    echo "  -v, --verbose   Enable verbose diagnostic tracing"
-    echo "  -s, --sn        AlphaESS Inverter Serial Number"
-    echo "  -i, --id        AlphaESS App ID"
-    echo "  -k, --secret    AlphaESS App Secret"
-    echo "  -o, --output    Optional output file path to write JSON"
+    echo "  -h, --help       Show this help message"
+    echo "  -v, --verbose    Enable verbose diagnostic tracing"
+    echo "  -s, --sn         AlphaESS Inverter Serial Number"
+    echo "  -i, --id         AlphaESS App ID"
+    echo "  -k, --secret     AlphaESS App Secret"
+    echo "  -a, --api-name   API name endpoint (default: getLastPowerData)"
+    echo "  -o, --output     Optional output file path to write JSON"
 }
 
 # --- PARSE COMMAND LINE ARGUMENTS ---
@@ -32,6 +34,7 @@ while [[ $# -gt 0 ]]; do
         -s|--sn)        SYS_SN="$2"; shift 2 ;;
         -i|--id)        APP_ID="$2"; shift 2 ;;
         -k|--secret)    APP_SECRET="$2"; shift 2 ;;
+        -a|--api-name)  API_NAME="$2"; shift 2 ;;
         -o|--output)    OUTPUT_FILE="$2"; shift 2 ;;
         *)              echo "ERROR: Unknown option: $1" >&2; show_help ;;
     esac
@@ -42,6 +45,7 @@ SYS_SN=$(echo -n "$SYS_SN" | tr -d '\r')
 APP_ID=$(echo -n "$APP_ID" | tr -d '\r')
 APP_SECRET=$(echo -n "$APP_SECRET" | tr -d '\r')
 OUTPUT_FILE=$(echo -n "$OUTPUT_FILE" | tr -d '\r')
+API_NAME=$(echo -n "$API_NAME" | tr -d '\r')
 
 if [[ -z "$SYS_SN" || -z "$APP_ID" || -z "$APP_SECRET" ]]; then
     echo "ERROR [v${SCRIPT_VERSION}]: Missing inputs." >&2
@@ -56,7 +60,7 @@ if [ "$VERBOSE" = true ]; then
 fi
 
 API_HOST="openapi.alphaess.com"
-API_PATH="/api/getLastPowerData"
+API_PATH="/api/${API_NAME}"
 API_URL="https://${API_HOST}${API_PATH}?sysSn=${SYS_SN}"
 
 if [ "$VERBOSE" = true ]; then
