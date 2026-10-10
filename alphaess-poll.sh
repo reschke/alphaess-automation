@@ -33,13 +33,50 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         -h|--help)      show_help ; exit 0;;
         -v|--verbose)   VERBOSE=true; shift ;;
-        -s|--sn)        SYS_SN="$2"; shift 2 ;;
-        -i|--id)        APP_ID="$2"; shift 2 ;;
-        -k|--secret)    APP_SECRET="$2"; shift 2 ;;
-        -a|--api-name)  API_NAME="$2"; shift 2 ;;
-        -p|--params)    EXTRA_PARAMS="$2"; shift 2 ;;
-        -o|--output)    OUTPUT_FILE="$2"; shift 2 ;;
-        *)              echo "ERROR: Unknown option: $1" >&2; show_help ;;
+        -s|--sn)        
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                SYS_SN="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        -i|--id)        
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                APP_ID="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        -k|--secret)    
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                APP_SECRET="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        -a|--api-name)  
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                API_NAME="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        -p|--params)    
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                EXTRA_PARAMS="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        -o|--output)    
+            if [ -n "$2" ] && [[ "$2" != -* ]]; then
+                OUTPUT_FILE="$2"; shift 2
+            else
+                echo "ERROR: Option '$1' requires a value." >&2; exit 2
+            fi
+            ;;
+        *)              
+            echo "ERROR: Unknown option: $1" >&2; show_help; exit 2 ;;
     esac
 done
 
